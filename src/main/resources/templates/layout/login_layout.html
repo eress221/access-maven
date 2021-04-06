@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko"
+	  xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+	<th:block th:include="/common/header"></th:block>
+	<!--suppress ThymeleafVariablesResolveInspection -->
+	<title th:text='${"기본 타이틀 - " + title}'></title>
+</head>
+<body class="bg-gradient-dark">
+	<div id="loading" class="custom-loading">
+		<div class="text-center">
+			<img src="/img/loading.svg" alt="loading..." style="width:250px;margin-top:10%;"/>
+			<br><span class="h2 text-white">Loading...</span>
+		</div>
+	</div>
+	<h1 class="custom-logo">
+<!--		<img src="/img/logo.png" alt=""/>-->
+		<span>로고 없음</span>
+	</h1>
+	<div class='container'>
+		<th:block layout:fragment="content"></th:block>
+	</div>
+	<th:block th:include="/common/footer"></th:block>
+</body>
+</html>

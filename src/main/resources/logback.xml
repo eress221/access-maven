@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="true">
+    <property name="log.component.dir" value="/log/boot-maven/logs"/>
+
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
+    <turboFilter class="ch.qos.logback.classic.turbo.DuplicateMessageFilter">
+        <AllowedRepetitions>2</AllowedRepetitions>
+    </turboFilter>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.JaninoEventEvaluator">
+                <expression>
+                    return (
+                        logger.contains("SqlSessionUtils")
+                    );
+                </expression>
+            </evaluator>
+            <OnMismatch>ACCEPT</OnMismatch>
+            <OnMatch>DENY</OnMatch>
+        </filter>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyyMMdd HH:mm:ss.SSS} [%thread] %-3level %logger{5}.%method:%line - %msg %n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="SERVICE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.component.dir}/service.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.component.dir}/service/service-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>2</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %class{50}.%method:%line %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="APPLICATION_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.component.dir}/application.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.component.dir}/application/application-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>2</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %class{50}.%method:%line %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <file>${log.component.dir}/error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.component.dir}/error/error-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>2</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %class{50}.%method:%line %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 비동기 어팬더 -->
+    <appender name="ASYNC_SERVICE_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>25000</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="SERVICE_FILE" />
+    </appender>
+
+    <appender name="ASYNC_APPLICATION_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>25000</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="APPLICATION_FILE" />
+    </appender>
+
+    <appender name="ASYNC_ERROR_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>25000</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="ERROR_FILE" />
+    </appender>
+
+    <!-- # Service Loggers  -->
+    <logger name="com.eress.bootmaven" additivity="false" level="DEBUG">
+        <appender-ref ref="STDOUT" />
+<!--        <appender-ref ref="ASYNC_SERVICE_FILE" />-->
+<!--        <appender-ref ref="ASYNC_ERROR_FILE" />-->
+    </logger>
+
+    <!-- # Root Loggers  -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+<!--        <appender-ref ref="ASYNC_APPLICATION_FILE" />-->
+<!--        <appender-ref ref="ASYNC_ERROR_FILE" />-->
+    </root>
+</configuration>
